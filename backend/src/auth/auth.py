@@ -92,7 +92,66 @@ def check_permissions(permission, payload):
     https://stackoverflow.com/questions/50236117/scraping-ssl-certificate-verify-failed-error-for-http-en-wikipedia-org
 '''
 def verify_decode_jwt(token):
-    raise Exception('Not Implemented')
+    # Gets the JWKS json to decode the JWT
+    jsonurl = urlopen(f'https://' + AUTH0_DOMAIN + '/.well-known/jwks.json')
+    jwks = json.loads(jsonurl.read())
+    token_header = jwt.get_unverified_header(token)
+    rsa_key = {}
+
+    # If the 'kid' key doesn't exist in the token header
+    if('kid' not in token_header):
+        raise AuthError({
+                        'code': 401,
+                        'description': 'Unauthorised.'
+                        }, 401)
+
+    # Gets the JWKS from the JSON
+    for key in jwks['keys']:
+        if key['kid'] == token_header['kid']:
+            rsa_key = {
+                    'kty': key['kty'],
+                    'kid': key['kid'],
+                    'use': key['use'],
+                    'n': key['n'],
+                    'e': key['e']
+                }
+
+    # Try to decode the JWT
+    if rsa_key:
+        try:
+            payload = jwt.decode(
+                token,
+                rsa_key,
+                algorithms=ALGORITHMS,
+                audience=API_AUDIENCE,
+                issuer='https://' + AUTH0_DOMAIN + '/'
+            )
+        # If the signature expired
+        except jwt.ExpiredSignatureError:
+            raise AuthError({
+                            'code': 401,
+                            'description': 'Unauthorised. The token expired.'
+                            }, 401)
+        # If any claim(s) is (are) invalid
+        except jwt.JWTClaimsError:
+            raise AuthError({
+                            'code': 401,
+                            'description': ''
+                            }, 401)
+        # If the JWT signature is invalid
+        except jwt.JWTError:
+            raise AuthError({
+                            'code': 401,
+                            'description': ''
+                            }, 401)
+        # If there was any other error decoding the JWT
+        except Exception as e:
+            raise AuthError({
+                            'code': 401,
+                            'description': ''
+                            }, 401)
+
+    return payload
 
 
 '''
