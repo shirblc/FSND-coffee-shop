@@ -237,6 +237,16 @@ def unprocessable(error):
                     }), 422
 
 
+# Error handler for Internal Server Error (500).
+@app.errorhandler(500)
+def internal_server(error):
+    return jsonify({
+                    'success': False,
+                    'error': 500,
+                    'message': 'An internal server error occurred.'
+                    }), 500
+
+
 '''
 @TODO implement error handlers using the @app.errorhandler(error) decorator
     each error handler should return (with approprate messages):
