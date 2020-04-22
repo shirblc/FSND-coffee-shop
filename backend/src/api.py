@@ -44,7 +44,7 @@ def get_drinks():
                     'success': True,
                     'drinks': drinks
     })
-    
+
 
 '''
 @TODO implement endpoint
@@ -55,6 +55,22 @@ def get_drinks():
     drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks-detail')
+@requires_auth('get:drinks-detail')
+def get_drink_details():
+    # Get all the drinks
+    drinks = Drink. query.all()
+    drinks_long = {}
+
+    # Create a dictionary with the drinks' long recipes
+    for drink in drinks:
+        drinks_long[drink.id] = drink.long()
+
+    # Return the dictionary
+    return jsonify({
+                    'success': True,
+                    'drinks': drinks_long
+    })
 
 
 '''
