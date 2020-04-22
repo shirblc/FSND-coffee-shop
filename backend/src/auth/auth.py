@@ -151,7 +151,25 @@ def verify_decode_jwt(token):
     return true otherwise
 '''
 def check_permissions(permission, payload):
-    raise Exception('Not Implemented')
+    # If there are no permissions in the payload, raises an AuthError
+    if('permissions' not in payload):
+        raise AuthError({
+                        'code': 403,
+                        'description':
+                        'You do not have permission to perform that action.'
+                        }, 403)
+
+    user_permissions = payload['permissions']
+
+    # If the needed permission isn't in the user's permissions, raises an error
+    if(permission not in user_permissions):
+        raise AuthError({
+                        'code': 403,
+                        'description':
+                        'You do not have permission to perform that action.'
+                        }, 403)
+
+    return True
 
 
 '''
