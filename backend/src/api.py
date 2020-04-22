@@ -24,7 +24,7 @@ def after_request(response):
 !! NOTE THIS WILL DROP ALL RECORDS AND START YOUR DB FROM SCRATCH
 !! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
 '''
-db_drop_and_create_all()
+# db_drop_and_create_all()
 
 # ROUTES
 '''
@@ -36,7 +36,15 @@ db_drop_and_create_all()
     where drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks')
+def get_drinks():
+    drinks = Drink.query.all()
 
+    return jsonify({
+                    'success': True,
+                    'drinks': drinks
+    })
+    
 
 '''
 @TODO implement endpoint
