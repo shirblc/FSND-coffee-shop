@@ -211,6 +211,15 @@ def delete_drink(drink_id):
 
 
 # Error Handling
+# Error handler for Not Found (404) error.
+@app.errorhandler(404)
+def not_found(error):
+    return jsonify({
+                    'success': False,
+                    'error': 404,
+                    'message': 'The resource you asked for was not found.'
+                    }), 404
+
 '''
 Example error handling for unprocessable entity
 '''
