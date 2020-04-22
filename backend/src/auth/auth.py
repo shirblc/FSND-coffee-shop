@@ -31,7 +31,34 @@ class AuthError(Exception):
     return the token part of the header
 '''
 def get_token_auth_header():
-    raise Exception('Not Implemented')
+    # Checks whether the authorisation header is in the request. If not,
+    # raises an authorisation error.
+    if('Authorization' not in request.headers):
+        raise AuthError({
+                        'code': 401,
+                        'description': 'Unauthorised.'
+        }, 401)
+
+    auth_header = request.headers.get('Authorization')
+    auth_list = auth_header.split(" ")
+
+    # Checks whether the authorisation header contains two parts. If not,
+    # raises an authorisation error.
+    if(len(auth_list) != 2):
+        raise AuthError({
+                        'code': 401,
+                        'description': 'Unauthorised.'
+        }, 401)
+
+    # Checks whether the first part of the authorisation header is the word
+    # 'bearer'. If not, raises an authorisation error.
+    if(auth_list[0].lower() != 'bearer'):
+        raise AuthError({
+                        'code': 401,
+                        'description': 'Unauthorised.'
+        }, 401)
+
+    return auth_list[1]
 
 
 '''
