@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify, abort
 from sqlalchemy import exc
 import json
 from flask_cors import CORS
+from ast import literal_eval
 
 from .database.models import db_drop_and_create_all, setup_db, Drink
 from .auth.auth import AuthError, requires_auth
@@ -117,6 +118,63 @@ def add_new_drink():
     drink an array containing only the updated drink
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks/<drink_id>', methods=['PATCH'])
+@requires_auth('patch:drinks')
+def edit_drink(drink_id):
+    updated_drink = json.loads(request.data)['drink']
+    drink = Drink.query.filter(Drink.id == drink_id).one_or_none()
+    drink_return = []
+
+    # If the drink doesn't exist in the database, abort with a 404 error
+    if(drink is None):
+        abort(404)
+
+    # If the drink's name has changed, update the drink's name
+    if(drink.title != updated_drink['title']):
+        drink.title = updated_drink['title']
+
+    # Gets the new and old recipes
+    drink_recipe = literal_eval(drink.recipe)
+    updated_recipe = updated_drink['recipe']
+
+    # Checks whether one of the recipes is longer than the other. If it is,
+    # it means the user either added or deleted ingredients, so the number
+    # of ingredients needs to be updated.
+    if(len(drink_recipe) > len(updated_recipe)):
+        del drink_recipe[len(updated_recipe):len(drink_recipe)]
+    # If the new recipe is longer, gets the difference between the new recipe
+    # and the old one and adds placeholders for the new ingredients. The new
+    # ingredients are then added in the update loop below.
+    elif(len(drink_recipe) < len(updated_recipe)):
+        difference = len(updated_recipe) - len(drink_recipe)
+        for i in range(difference):
+            drink_recipe.append({
+                                'name': 'name',
+                                'color': 'color',
+                                'parts': 1
+            })
+
+    # Updates the recipe according to the new recipe
+    for i in range(len(drink_recipe)):
+        drink_recipe[i]['name'] = updated_recipe[i]['name']
+        drink_recipe[i]['color'] = updated_recipe[i]['color']
+        drink_recipe[i]['parts'] = updated_recipe[i]['parts']
+
+    # Replaces the recipe with the new recipe
+    drink.recipe = str(drink_recipe)
+
+    # Try to update the recipe in the database
+    try:
+        drink.update()
+        drink_return.extend(drink.title, drink.recipe)
+    # If there's an error, abort
+    except:
+        abort(500)
+
+    return jsonify({
+                    'success': True,
+                    'drinks': drink_return
+    })
 
 
 '''
