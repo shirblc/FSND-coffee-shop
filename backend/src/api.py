@@ -247,6 +247,16 @@ def internal_server(error):
                     }), 500
 
 
+# Error handler for authentication error.
+@app.errorhandler(AuthError)
+def auth_error(error):
+    return jsonify({
+                    'success': False,
+                    'error': error.status_code,
+                    'message': error.error['description']
+                    }), error.status_code
+
+
 '''
 @TODO implement error handlers using the @app.errorhandler(error) decorator
     each error handler should return (with approprate messages):
