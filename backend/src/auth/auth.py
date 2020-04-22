@@ -109,19 +109,20 @@ def verify_decode_jwt(token):
         except jwt.JWTClaimsError:
             raise AuthError({
                             'code': 401,
-                            'description': ''
+                            'description': 'Unauthorised. Claims are invalid.'
                             }, 401)
         # If the JWT signature is invalid
         except jwt.JWTError:
             raise AuthError({
                             'code': 401,
-                            'description': ''
+                            'description':
+                            'Unauthorised. Signature is invalid.'
                             }, 401)
         # If there was any other error decoding the JWT
         except Exception as e:
             raise AuthError({
                             'code': 401,
-                            'description': ''
+                            'description': 'Unauthorised.'
                             }, 401)
 
     return payload
