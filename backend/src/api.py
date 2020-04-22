@@ -188,6 +188,26 @@ def edit_drink(drink_id):
     is the id of the deleted record
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks/<drink_id>', methods=['DELETE'])
+@requires_auth('delete:drinks')
+def delete_drink(drink_id):
+    drink = Drink.query.filter(Drink.id == drink_id).one_or_none()
+
+    # If there's no drink with that ID
+    if(drink is None):
+        abort(404)
+
+    # Try to delete the drink from the database
+    try:
+        drink.delete()
+    # If there's an error, abort
+    except:
+        abort(500)
+
+    return jsonify({
+                    'success': True,
+                    'delete': drink_id
+    })
 
 
 # Error Handling
