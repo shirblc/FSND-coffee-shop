@@ -83,6 +83,26 @@ def get_drink_details():
     drink an array containing only the newly created drink
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks', methods=['POST'])
+@requires_auth('post:drinks')
+def add_new_drink():
+    # Get the drink details from the request
+    drink_details = json.loads(request.data)['drink']
+    drink_return = []
+
+    # Try to add the drink to the database
+    try:
+        drink = Drink(title=drink_details['title'], recipe=str(drink_details['recipe']))
+        drink.insert()
+        drink_return.extend(drink.title, drink.recipe)
+    # In case of an error, abort with status code 500
+    except:
+        abort(500)
+
+    return jsonify({
+                    'success': True,
+                    'drinks': drink_return
+    })
 
 
 '''
