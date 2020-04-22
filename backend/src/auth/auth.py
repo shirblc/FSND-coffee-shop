@@ -19,14 +19,14 @@ class AuthError(Exception):
 
 
 # Auth Header
-'''
-@TODO implement get_token_auth_header() method
-    it should attempt to get the header from the request
-        it should raise an AuthError if no header is present
-    it should attempt to split bearer and the token
-        it should raise an AuthError if the header is malformed
-    return the token part of the header
-'''
+
+# Function: get_token_auth_header
+# Description: Gets the request's 'Authorization' header. Checks to see whether
+#              said header exists; whether the header is comprised of two
+#              parts; and whether the first part is 'bearer'. This serves as
+#              preliminary verification that the JWT is in the correct form.
+# Parameters: None
+# Returns: auth_list[1] - The JSON web token.
 def get_token_auth_header():
     # Checks whether the authorisation header is in the request. If not,
     # raises an authorisation error.
@@ -58,20 +58,12 @@ def get_token_auth_header():
     return auth_list[1]
 
 
-'''
-@TODO implement verify_decode_jwt(token) method
-    @INPUTS
-        token: a json web token (string)
-
-    it should be an Auth0 token with key id (kid)
-    it should verify the token using Auth0 /.well-known/jwks.json
-    it should decode the payload from the token
-    it should validate the claims
-    return the decoded payload
-
-    !!NOTE urlopen has a common certificate error described here:
-    https://stackoverflow.com/questions/50236117/scraping-ssl-certificate-verify-failed-error-for-http-en-wikipedia-org
-'''
+# Function: verify_decode_jwt
+# Description: Gets the token and attempts to decode and verify it using the
+#              Auth0 JWKS (JSON Web Key Set) JSON. Ensures that the JWT is
+#              authentic, still valid and hasn't been tampered with.
+# Parameters: token - a JSON Web Token.
+# Returns: payload - The payload from the decoded token.
 def verify_decode_jwt(token):
     # Gets the JWKS json to decode the JWT
     jsonurl = urlopen(f'https://' + AUTH0_DOMAIN + '/.well-known/jwks.json')
@@ -97,7 +89,7 @@ def verify_decode_jwt(token):
                     'e': key['e']
                 }
 
-    # Try to decode the JWT
+    # Try to decode and validate the JWT
     if rsa_key:
         try:
             payload = jwt.decode(
@@ -135,18 +127,14 @@ def verify_decode_jwt(token):
     return payload
 
 
-'''
-@TODO implement check_permissions(permission, payload) method
-    @INPUTS
-        permission: string permission (i.e. 'post:drink')
-        payload: decoded jwt payload
-
-    it should raise an AuthError if permissions are not included in the payload
-        !!NOTE check your RBAC settings in Auth0
-    it should raise an AuthError if the requested permission string is not in
-    the payload permissions array
-    return true otherwise
-'''
+# Function: check_permissions
+# Description: Checks the payload from of the decoded, verified JWT for
+#              permissions. Then compares the user's permissions to the
+#              required permission to check whether the user is allowed to
+#              access the given resource.
+# Parameters: permission (string) - The resource's required permission.
+#             payload - The payload from the decoded, verified JWT.
+# Returns: True - Boolean confirming the user has the required permission.
 def check_permissions(permission, payload):
     # If there are no permissions in the payload, raises an AuthError
     if('permissions' not in payload):
@@ -169,18 +157,11 @@ def check_permissions(permission, payload):
     return True
 
 
-'''
-@TODO implement @requires_auth(permission) decorator method
-    @INPUTS
-        permission: string permission (i.e. 'post:drink')
-
-    it should use the get_token_auth_header method to get the token
-    it should use the verify_decode_jwt method to decode the jwt
-    it should use the check_permissions method validate claims and check
-    the requested permission
-    return the decorator which passes the decoded payload to the decorated
-    method
-'''
+# @requires_auth() Decorator Definition
+# Description: Gets the Authorization header, verifies the JWT and checks
+#              the user has the required permissions using the functions above.
+# Parameters: permission (string) - The resource's required permission.
+# Returns: @requires_auth decorator.
 def requires_auth(permission=''):
     def requires_auth_decorator(f):
         @wraps(f)
