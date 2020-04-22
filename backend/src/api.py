@@ -16,9 +16,12 @@ CORS(app)
 @app.after_request
 def after_request(response):
     response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS')
-    response.headers.add('Access-Control-Allow-Headers', 'Authorization, Content-Type')
+    response.headers.add('Access-Control-Allow-Methods',
+                         'GET, POST, PATCH, DELETE, OPTIONS')
+    response.headers.add('Access-Control-Allow-Headers',
+                         'Authorization, Content-Type')
     return response
+
 
 '''
 @TODO uncomment the following line to initialize the datbase
@@ -93,11 +96,12 @@ def add_new_drink():
 
     # Try to add the drink to the database
     try:
-        drink = Drink(title=drink_details['title'], recipe=str(drink_details['recipe']))
+        drink = Drink(title=drink_details['title'],
+                      recipe=str(drink_details['recipe']))
         drink.insert()
         drink_return.extend(drink.title, drink.recipe)
     # In case of an error, abort with status code 500
-    except:
+    except Exception as e:
         abort(500)
 
     return jsonify({
@@ -152,7 +156,7 @@ def edit_drink(drink_id):
                                 'name': 'name',
                                 'color': 'color',
                                 'parts': 1
-            })
+                                })
 
     # Updates the recipe according to the new recipe
     for i in range(len(drink_recipe)):
@@ -168,7 +172,7 @@ def edit_drink(drink_id):
         drink.update()
         drink_return.extend(drink.title, drink.recipe)
     # If there's an error, abort
-    except:
+    except Exception as e:
         abort(500)
 
     return jsonify({
@@ -201,7 +205,7 @@ def delete_drink(drink_id):
     try:
         drink.delete()
     # If there's an error, abort
-    except:
+    except Exception as e:
         abort(500)
 
     return jsonify({
@@ -219,6 +223,7 @@ def not_found(error):
                     'error': 404,
                     'message': 'The resource you asked for was not found.'
                     }), 404
+
 
 '''
 Example error handling for unprocessable entity
