@@ -9,11 +9,9 @@ AUTH0_DOMAIN = 'dev-sbac.auth0.com'
 ALGORITHMS = ['RS256']
 API_AUDIENCE = 'coffeeshop'
 
+
 # AuthError Exception
-'''
-AuthError Exception
-A standardized way to communicate auth failure modes
-'''
+# A standardized way to communicate auth failure modes
 class AuthError(Exception):
     def __init__(self, error, status_code):
         self.error = error
@@ -21,7 +19,6 @@ class AuthError(Exception):
 
 
 # Auth Header
-
 '''
 @TODO implement get_token_auth_header() method
     it should attempt to get the header from the request
@@ -37,7 +34,7 @@ def get_token_auth_header():
         raise AuthError({
                         'code': 401,
                         'description': 'Unauthorised.'
-        }, 401)
+                        }, 401)
 
     auth_header = request.headers.get('Authorization')
     auth_list = auth_header.split(" ")
@@ -48,7 +45,7 @@ def get_token_auth_header():
         raise AuthError({
                         'code': 401,
                         'description': 'Unauthorised.'
-        }, 401)
+                        }, 401)
 
     # Checks whether the first part of the authorisation header is the word
     # 'bearer'. If not, raises an authorisation error.
@@ -56,7 +53,7 @@ def get_token_auth_header():
         raise AuthError({
                         'code': 401,
                         'description': 'Unauthorised.'
-        }, 401)
+                        }, 401)
 
     return auth_list[1]
 
