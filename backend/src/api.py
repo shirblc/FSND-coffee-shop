@@ -49,7 +49,7 @@ def get_drinks():
     if drinks:
         # Gets each drink's short data representation
         for drink in drinks:
-            drinks_short_format[drink.id] = drink.short()
+            drinks_short_format.append(drink.short())
     else:
         drinks_short_format.append({
                                     'name': 'There are no drinks at the moment!'
