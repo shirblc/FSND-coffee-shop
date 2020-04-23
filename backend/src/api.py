@@ -106,7 +106,7 @@ def get_drink_details(jwt):
 @requires_auth('post:drinks')
 def add_new_drink(jwt):
     # Get the drink details from the request
-    drink_details = json.loads(request.data)['drink']
+    drink_details = json.loads(request.data)
     drink_return = []
 
     # Try to add the drink to the database
