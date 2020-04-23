@@ -229,6 +229,16 @@ def delete_drink(drink_id):
 
 # Error Handling
 # ---------------------------------------------------------------------------#
+# Error handler for Bad Request (400) error.
+@app.errorhandler(400)
+def bad_request(error):
+    return jsonify({
+                    'success': False,
+                    'error': 400,
+                    'message': 'Bad request. Check your request format.'
+                    }), 400
+
+
 # Error handler for Not Found (404) error.
 @app.errorhandler(404)
 def not_found(error):
@@ -237,6 +247,16 @@ def not_found(error):
                     'error': 404,
                     'message': 'The resource you asked for was not found.'
                     }), 404
+
+
+# Error handler for Method Not Allowed (405) error.
+@app.errorhandler(405)
+def method_not_allowed(error):
+    return jsonify({
+                    'success': False,
+                    'error': 405,
+                    'message': 'Method not allowed.'
+                    }), 405
 
 
 # Error handler for Unprocessable (422) error.
