@@ -1,4 +1,5 @@
 import os
+import sys
 from flask import Flask, request, jsonify, abort
 from sqlalchemy import exc
 import json
@@ -28,7 +29,7 @@ def after_request(response):
 !! NOTE THIS WILL DROP ALL RECORDS AND START YOUR DB FROM SCRATCH
 !! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
 '''
-db_drop_and_create_all()
+# db_drop_and_create_all()
 
 
 # ROUTES
@@ -78,7 +79,7 @@ def get_drinks():
 @requires_auth('get:drinks-detail')
 def get_drink_details(jwt):
     # Get all the drinks
-    drinks = Drink. query.all()
+    drinks = Drink.query.all()
     drinks_long = []
 
     # Create a list with the drinks' long recipes
@@ -108,15 +109,23 @@ def add_new_drink(jwt):
     # Get the drink details from the request
     drink_details = json.loads(request.data)
     drink_return = []
+    all_drinks = Drink.query.all()
+
+    # If the drink name already exists in the database, abort
+    for drink in all_drinks:
+        if(drink.title == drink_details['title']):
+            abort(409)
+
+    drink = Drink(title=drink_details['title'],
+                  recipe=json.dumps(drink_details['recipe']))
 
     # Try to add the drink to the database
     try:
-        drink = Drink(title=drink_details['title'],
-                      recipe=str(drink_details['recipe']))
         drink.insert()
         drink_return.append(drink.long())
     # In case of an error, abort with status code 500
     except Exception as e:
+        print(sys.exc_info())
         abort(500)
 
     return jsonify({
@@ -259,6 +268,17 @@ def method_not_allowed(error):
                     'error': 405,
                     'message': 'Method not allowed.'
                     }), 405
+
+
+# Error handler for Conflict (409) error.
+@app.errorhandler(409)
+def conflict(error):
+    return jsonify({
+                    'success': False,
+                    'error': 409,
+                    'message': 'Conflict. The resource you were trying to\
+                                create already exists.'
+                    }), 409
 
 
 # Error handler for Unprocessable (422) error.
