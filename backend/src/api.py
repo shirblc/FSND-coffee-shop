@@ -72,11 +72,11 @@ def get_drinks():
 # Endpoint: GET /drinks-detail
 # Description: Gets the list of drinks currently available, with each drink's
 #              long data representation.
-# Parameters: None.
+# Parameters: jwt - JSON Web Token.
 # Authorization: Requires authorisation, and 'get:drinks-detail' permission.
 @app.route('/drinks-detail')
 @requires_auth('get:drinks-detail')
-def get_drink_details():
+def get_drink_details(jwt):
     # Get all the drinks
     drinks = Drink. query.all()
     drinks_long = []
@@ -100,11 +100,11 @@ def get_drink_details():
 '''
 # Endpoint: POST /drinks
 # Description: Adds a new drink to the database from the supplied data.
-# Parameters: None.
+# Parameters: jwt - JSON Web Token.
 # Authorization: Requires authorisation, and 'post:drinks' permission.
 @app.route('/drinks', methods=['POST'])
 @requires_auth('post:drinks')
-def add_new_drink():
+def add_new_drink(jwt):
     # Get the drink details from the request
     drink_details = json.loads(request.data)['drink']
     drink_return = []
@@ -135,10 +135,11 @@ def add_new_drink():
 # Description: Edits the selected drink with the supplied data and updates the
 #              appropriate database row.
 # Parameters: drink_id (Integer).
+#             jwt - JSON Web Token.
 # Authorization: Requires authorisation, and 'patch:drinks' permission.
 @app.route('/drinks/<drink_id>', methods=['PATCH'])
 @requires_auth('patch:drinks')
-def edit_drink(drink_id):
+def edit_drink(drink_id, jwt):
     updated_drink = json.loads(request.data)['drink']
     drink = Drink.query.filter(Drink.id == drink_id).one_or_none()
     drink_return = []
@@ -204,10 +205,11 @@ def edit_drink(drink_id):
 # Endpoint: DELETE /drinks/<drink_id>
 # Description: Deletes the selected drink from the drinks database.
 # Parameters: drink_id (Integer).
+#             jwt - JSON Web Token.
 # Authorization: Requires authorisation, and 'delete:drinks' permission.
 @app.route('/drinks/<drink_id>', methods=['DELETE'])
 @requires_auth('delete:drinks')
-def delete_drink(drink_id):
+def delete_drink(drink_id, jwt):
     drink = Drink.query.filter(Drink.id == drink_id).one_or_none()
 
     # If there's no drink with that ID
