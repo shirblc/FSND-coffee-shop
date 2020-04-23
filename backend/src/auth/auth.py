@@ -68,7 +68,15 @@ def verify_decode_jwt(token):
     # Gets the JWKS json to decode the JWT
     jsonurl = urlopen(f'https://' + AUTH0_DOMAIN + '/.well-known/jwks.json')
     jwks = json.loads(jsonurl.read())
-    token_header = jwt.get_unverified_header(token)
+
+    try:
+        token_header = jwt.get_unverified_header(token)
+    except Exception as e:
+        raise AuthError({
+                        'code': 401,
+                        'description': 'Unauthorised.'
+                        }, 401)
+
     rsa_key = {}
 
     # If the 'kid' key doesn't exist in the token header
