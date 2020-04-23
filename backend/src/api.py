@@ -43,10 +43,21 @@ def after_request(response):
 @app.route('/drinks')
 def get_drinks():
     drinks = Drink.query.all()
+    drinks_short_format = []
+
+    # Checks whether there are drinks in the database
+    if drinks:
+        # Gets each drink's short data representation
+        for drink in drinks:
+            drinks_short_format[drink.id] = drink.short()
+    else:
+        drinks_short_format.append({
+                                    'name': 'There are no drinks at the moment!'
+                                    })
 
     return jsonify({
                     'success': True,
-                    'drinks': drinks
+                    'drinks': drinks_short_format
     })
 
 
