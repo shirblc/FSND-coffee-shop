@@ -75,13 +75,13 @@ def get_drinks():
 def get_drink_details():
     # Get all the drinks
     drinks = Drink. query.all()
-    drinks_long = {}
+    drinks_long = []
 
-    # Create a dictionary with the drinks' long recipes
+    # Create a list with the drinks' long recipes
     for drink in drinks:
-        drinks_long[drink.id] = drink.long()
+        drinks_long.append(drink.long())
 
-    # Return the dictionary
+    # Return the list
     return jsonify({
                     'success': True,
                     'drinks': drinks_long
@@ -110,7 +110,7 @@ def add_new_drink():
         drink = Drink(title=drink_details['title'],
                       recipe=str(drink_details['recipe']))
         drink.insert()
-        drink_return.extend(drink.title, drink.recipe)
+        drink_return.append(drink.long())
     # In case of an error, abort with status code 500
     except Exception as e:
         abort(500)
@@ -181,7 +181,7 @@ def edit_drink(drink_id):
     # Try to update the recipe in the database
     try:
         drink.update()
-        drink_return.extend(drink.title, drink.recipe)
+        drink_return.append(drink.long())
     # If there's an error, abort
     except Exception as e:
         abort(500)
