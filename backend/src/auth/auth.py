@@ -33,7 +33,7 @@ def get_token_auth_header():
     if('Authorization' not in request.headers):
         raise AuthError({
                         'code': 401,
-                        'description': 'Unauthorised.'
+                        'description': 'Unauthorised. No Authorization header.'
                         }, 401)
 
     auth_header = request.headers.get('Authorization')
@@ -44,7 +44,8 @@ def get_token_auth_header():
     if(len(auth_list) != 2):
         raise AuthError({
                         'code': 401,
-                        'description': 'Unauthorised.'
+                        'description': 'Unauthorised. \
+                                        Malformed Authorization header.'
                         }, 401)
 
     # Checks whether the first part of the authorisation header is the word
@@ -52,7 +53,8 @@ def get_token_auth_header():
     if(auth_list[0].lower() != 'bearer'):
         raise AuthError({
                         'code': 401,
-                        'description': 'Unauthorised.'
+                        'description': 'Unauthorised.\
+                                        Malformed Authorization header.'
                         }, 401)
 
     return auth_list[1]
@@ -74,7 +76,7 @@ def verify_decode_jwt(token):
     except Exception as e:
         raise AuthError({
                         'code': 401,
-                        'description': 'Unauthorised.'
+                        'description': 'Unauthorised. Invalid token.'
                         }, 401)
 
     rsa_key = {}
@@ -83,7 +85,7 @@ def verify_decode_jwt(token):
     if('kid' not in token_header):
         raise AuthError({
                         'code': 401,
-                        'description': 'Unauthorised.'
+                        'description': 'Unauthorised. Invalid token.'
                         }, 401)
 
     # Gets the JWKS from the JSON
@@ -130,7 +132,7 @@ def verify_decode_jwt(token):
         except Exception as e:
             raise AuthError({
                             'code': 401,
-                            'description': 'Unauthorised.'
+                            'description': 'Unauthorised. Invalid token.'
                             }, 401)
 
     return payload

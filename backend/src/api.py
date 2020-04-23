@@ -29,7 +29,7 @@ def after_request(response):
 !! NOTE THIS WILL DROP ALL RECORDS AND START YOUR DB FROM SCRATCH
 !! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
 '''
-# db_drop_and_create_all()
+db_drop_and_create_all()
 
 
 # ROUTES
@@ -55,9 +55,7 @@ def get_drinks():
         for drink in drinks:
             drinks_short_format.append(drink.short())
     else:
-        drinks_short_format.append({
-                                    'name': 'There are no drinks at the moment!'
-                                    })
+        abort(404)
 
     return jsonify({
                     'success': True,
@@ -82,9 +80,13 @@ def get_drink_details(jwt):
     drinks = Drink.query.all()
     drinks_long = []
 
-    # Create a list with the drinks' long recipes
-    for drink in drinks:
-        drinks_long.append(drink.long())
+    # Checks whether there are drinks in the database
+    if drinks:
+        # Create a list with the drinks' long recipes
+        for drink in drinks:
+            drinks_long.append(drink.long())
+    else:
+        abort(404)
 
     # Return the list
     return jsonify({
