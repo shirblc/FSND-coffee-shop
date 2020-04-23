@@ -175,9 +175,9 @@ def edit_drink(jwt, drink_id):
         # of ingredients needs to be updated.
         if(len(drink_recipe) > len(updated_recipe)):
             del drink_recipe[len(updated_recipe):len(drink_recipe)]
-        # If the new recipe is longer, gets the difference between the new recipe
-        # and the old one and adds placeholders for the new ingredients. The new
-        # ingredients are then added in the update loop below.
+        # If the new recipe is longer, gets the difference between the new
+        # recipe and the old one and adds placeholders for the new ingredients.
+        # The new ingredients are then added in the update loop below.
         elif(len(drink_recipe) < len(updated_recipe)):
             difference = len(updated_recipe) - len(drink_recipe)
             for i in range(difference):
