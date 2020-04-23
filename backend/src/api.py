@@ -34,11 +34,6 @@ db_drop_and_create_all()
 
 # ROUTES
 # ---------------------------------------------------------------------------#
-'''
-@TODO implement endpoint
-    GET /drinks
-        or appropriate status code indicating reason for failure
-'''
 # Endpoint: GET /drinks
 # Description: Gets the list of drinks currently available, with each drink's
 #              short data representation.
@@ -63,11 +58,6 @@ def get_drinks():
     })
 
 
-'''
-@TODO implement endpoint
-    GET /drinks-detail
-        or appropriate status code indicating reason for failure
-'''
 # Endpoint: GET /drinks-detail
 # Description: Gets the list of drinks currently available, with each drink's
 #              long data representation.
@@ -95,12 +85,6 @@ def get_drink_details(jwt):
     })
 
 
-'''
-@TODO implement endpoint
-    POST /drinks
-        it should create a new row in the drinks table
-        or appropriate status code indicating reason for failure
-'''
 # Endpoint: POST /drinks
 # Description: Adds a new drink to the database from the supplied data.
 # Parameters: jwt - JSON Web Token.
@@ -136,12 +120,6 @@ def add_new_drink(jwt):
     })
 
 
-'''
-@TODO implement endpoint
-    PATCH /drinks/<id>
-        it should update the corresponding row for <id>
-        or appropriate status code indicating reason for failure
-'''
 # Endpoint: PATCH /drinks/<drink_id>
 # Description: Edits the selected drink with the supplied data and updates the
 #              appropriate database row.
@@ -210,12 +188,6 @@ def edit_drink(jwt, drink_id):
     })
 
 
-'''
-@TODO implement endpoint
-    DELETE /drinks/<id>
-        it should delete the corresponding row for <id>
-        or appropriate status code indicating reason for failure
-'''
 # Endpoint: DELETE /drinks/<drink_id>
 # Description: Deletes the selected drink from the drinks database.
 # Parameters: drink_id (Integer).
@@ -314,15 +286,3 @@ def auth_error(error):
                     'error': error.status_code,
                     'message': error.error['description']
                     }), error.status_code
-
-
-'''
-@TODO implement error handlers using the @app.errorhandler(error) decorator
-    each error handler should return (with approprate messages):
-             jsonify({
-                    "success": False,
-                    "error": 404,
-                    "message": "resource not found"
-                    }), 404
-
-'''
